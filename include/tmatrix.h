@@ -6,15 +6,13 @@
 
 #ifndef __TDynamicMatrix_H__
 #define __TDynamicMatrix_H__
-//#define дофига 100000000
-//#define поменьше 10000
 
 #include <iostream>
 
 using namespace std;
 
-const int MAX_VECTOR_SIZE = 1000000000;
-const int MAX_MATRIX_SIZE = 10000;
+const int MAX_VECTOR_SIZE = 1000000;
+const int MAX_MATRIX_SIZE = 1000;
 
 // Динамический вектор - 
 // шаблонный вектор на динамической памяти
@@ -29,11 +27,15 @@ public:
   {
     if (sz == 0)
       throw out_of_range("Vector size should be greater than zero");
+    if (sz > MAX_VECTOR_SIZE)
+        throw out_of_range("Vector size is too large");
     pMem = new T[sz]();// {}; // У типа T д.б. констуктор по умолчанию
   }
   TDynamicVector(T* arr, size_t s) : sz(s)
   {
-    assert(arr != nullptr && "TDynamicVector requires non-nullptr arg");
+    if (arr == nullptr) {
+        throw ("TDynamicVector requires non-nullptr arg");
+    }
     pMem = new T[sz];
     std::copy(arr, arr + sz, pMem);
   }
@@ -105,7 +107,7 @@ public:
   TDynamicVector operator+(T val)
   {
       TDynamicVector res(this->sz);
-      for (size_t i = 0; i < length; i++) {
+      for (size_t i = 0; i < this->sz; i++) {
           res[i] = (*this)[i] + val;
       }
 
@@ -114,7 +116,7 @@ public:
   TDynamicVector operator-(T val)
   {
       TDynamicVector res(this->sz);
-      for (size_t i = 0; i < length; i++) {
+      for (size_t i = 0; i < this->sz; i++) {
           res[i] = (*this)[i] - val;
       }
 
@@ -123,7 +125,7 @@ public:
   TDynamicVector operator*(T val)
   {
       TDynamicVector res(this->sz);
-      for (size_t i = 0; i < length; i++) {
+      for (size_t i = 0; i < this->sz; i++) {
           res[i] = (*this)[i] * val;
       }
 
@@ -145,24 +147,24 @@ public:
   }
   TDynamicVector operator-(const TDynamicVector& v)
   {
-      if (this->sz != obj.sz) {
-          throw std::length_error("Vectors' sizes not equal")
+      if (this->sz != v.sz) {
+          throw std::length_error("Vectors' sizes not equal");
       }
       TDynamicVector res(this->sz);
-      for (size_t i = 0; i < length; i++) {
-          res[i] = this[i] - v[i];
+      for (size_t i = 0; i < v.sz; i++) {
+          res[i] = (*this)[i] - v[i];
       }
 
       return res;
   }
   T operator*(const TDynamicVector& v) 
   {
-      if (this->sz != obj.sz) {
-          throw std::length_error("Vectors' sizes not equal")
+      if (this->sz != v.sz) {
+          throw std::length_error("Vectors' sizes not equal");
       }
-      T res;
-      for (size_t i = 0; i < length; i++) {
-          res += this[i] * v[i];
+      T res = 0;
+      for (size_t i = 0; i < v.sz; i++) {
+          res += (*this)[i] * v[i];
       }
 
       return res;
@@ -200,6 +202,9 @@ class TDynamicMatrix : private TDynamicVector<TDynamicVector<T>>
 public:
   TDynamicMatrix(size_t s = 1)
   {
+      if (s > MAX_MATRIX_SIZE) {
+          throw "Too large matrix size";
+      }
       this->sz = s;
       this->pMem = new TDynamicVector<T>[this->sz];
       for (size_t i = 0; i < sz; i++) {
@@ -224,6 +229,10 @@ public:
       return *this;
   }
 
+  size_t size() const noexcept {
+      return sz;
+  }
+
   // сравнение
   bool operator==(const TDynamicMatrix& m) const noexcept
   {
@@ -240,12 +249,16 @@ public:
       return true;
   }
 
+  bool operator!= (const TDynamicMatrix& m) const noexcept {
+      return !(*this == m);
+  }
+
   // матрично-скалярные операции
   TDynamicMatrix operator*(const T& val)
   {
       TDynamicMatrix res(this->sz);
       for (size_t i = 0; i < this->sz; i++) {
-          res[i] = (*this)[i] * val
+          res[i] = (*this)[i] * val;
       }
       return res;
   }
@@ -253,7 +266,7 @@ public:
   // матрично-векторные операции
   TDynamicVector<T> operator*(const TDynamicVector<T>& v)
   {
-      if (this->sz != v.sz) {
+      if (this->sz != v.size()) {
           throw std::length_error("Vector and matrix dimensions must be equal");
       }
       TDynamicVector<T> res(this->sz);
@@ -297,7 +310,13 @@ public:
       }
       TDynamicMatrix res(this->sz);
       for (size_t i = 0; i < this->sz; i++) {
-          res[i] = (*this)[i] * m[i];
+          for (size_t j = 0; j < this->sz; j++) {
+              res[i][j] = 0;
+              for (size_t k = 0; k < this->sz; k++) {
+                  res[i][j] += (*this)[i][k] * m[k][j];
+              }
+          }
+
       }
 
       return res;
