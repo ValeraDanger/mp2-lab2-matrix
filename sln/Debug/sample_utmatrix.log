@@ -1,0 +1,3 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(517,5): warning MSB8028: промежуточный каталог (Debug\) содержит файлы, которые используются совместно с другим проектом (gtest.vcxproj, test_utmatrix.vcxproj).  Это может привести к ошибкам очистки и перестроения.
+  sample_matrix.cpp
+  sample_utmatrix.vcxproj -> C:\Users\olegp\Downloads\mp2-lab2-matrix-master\mp2-lab2-matrix-master\sln\Debug\sample_utmatrix.exe

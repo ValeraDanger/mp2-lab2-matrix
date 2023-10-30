@@ -12,7 +12,7 @@ void main()
 {
   TDynamicMatrix<int> a(5), b(5), c(5);
   int i, j;
-
+  c;
   setlocale(LC_ALL, "Russian");
   cout << "Тестирование класс работы с матрицами"
     << endl;
@@ -26,5 +26,21 @@ void main()
   cout << "Matrix a = " << endl << a << endl;
   cout << "Matrix b = " << endl << b << endl;
   cout << "Matrix c = a + b" << endl << c << endl;
+
+
+  TDynamicMatrix<int> m1(3);
+  TDynamicVector<int> v(3);
+  for (size_t i = 0; i < 3; i++) {
+	  v[i] = i;
+  }
+  for (size_t i = 0; i < 3; i++) {
+	  m1[i] = v;
+  }
+
+  cout << m1 << endl;
+
+  m1 = m1 * m1;
+
+  cout << m1 << endl;
 }
 //---------------------------------------------------------------------------
